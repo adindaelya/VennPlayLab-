@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VennPlayLab 🌸 - Diagram Venn 3 Level Interaktif</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+    
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #FAF5FF;
+    }
+
+    .perspective-1000 { perspective: 1000px; }
+    .transform-style-3d { transform-style: preserve-3d; }
+    .backface-hidden { backface-visibility: hidden; }
+    .rotate-y-180 { transform: rotateY(180deg); }
+
+    @keyframes numPop {
+      0% { transform: scale(0.2) rotate(-15deg); opacity: 0; }
+      70% { transform: scale(1.3) rotate(5deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    .animated-num {
+      transform-origin: center;
+      animation: numPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen pb-16 selection:bg-pink-200 selection:text-pink-900">
+
+  <!-- HEADER -->
+  <header class="bg-white/90 backdrop-blur-md border-b-2 border-pink-100 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-gradient-to-tr from-pink-400 via-purple-300 to-sky-300 rounded-3xl flex items-center justify-center text-white shadow-md shadow-pink-100 transform -rotate-3 hover:rotate-0 transition">
+          <i data-lucide="sparkles" class="w-6 h-6 animate-pulse"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-black text-xl text-slate-800 tracking-tight">VennPlayLab <span class="text-pink-400">✨</span></h1>
+            <span class="bg-pink-100 text-pink-700 font-extrabold text-[11px] px-2.5 py-0.5 rounded-full border border-pink-200">3 Level Belajar</span>
+          </div>
+          <p class="text-xs text-purple-600/80 font-bold">Pengenalan Himpunan ➔ 2 Himpunan ➔ 3 Himpunan 🌸</p>
+        </div>
+      </div>
+
+      <nav class="flex items-center gap-2 bg-purple-50/80 p-1.5 rounded-2xl border border-purple-100">
+        <button onclick="switchTab('explorasi')" id="btn-tab-explorasi" class="px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md shadow-pink-200">
+          <i data-lucide="compass" class="w-4 h-4"></i> 1. Eksplorasi 3 Level
+        </button>
+        <button onclick="switchTab('kuis')" id="btn-tab-kuis" class="px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 text-slate-600 hover:text-purple-600">
+          <i data-lucide="help-circle" class="w-4 h-4"></i> 2. Kuis &amp; Pembahasan
+        </button>
+        <button onclick="switchTab('flashcard')" id="btn-tab-flashcard" class="px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 text-slate-600 hover:text-purple-600">
+          <i data-lucide="layers" class="w-4 h-4"></i> 3. Flashcards
+        </button>
+      </nav>
+
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 mt-6 space-y-6">
+
+    <!-- TAB 1: EKSPLORASI 3 LEVEL -->
+    <div id="tab-explorasi" class="space-y-6">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- SIDEBAR: 3 LEVEL TERSTRUKTUR -->
+        <div class="lg:col-span-4 bg-white rounded-3xl p-5 border-2 border-purple-100 shadow-sm space-y-5">
+          <div class="flex items-center justify-between border-b border-purple-50 pb-3">
+            <span class="text-xs font-black text-purple-600 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="layers" class="w-4 h-4 text-pink-500"></i> Pilih Level Pembelajaran
+            </span>
+            <span id="level-badge" class="bg-emerald-100 text-emerald-700 text-[10px] font-extrabold px-2.5 py-1 rounded-full border border-emerald-200">
+              Level 1: Dasar
+            </span>
+          </div>
+
+          <!-- LEVEL 1: KONSEP DASAR (1 DIAGRAM) -->
+          <div class="space-y-1.5">
+            <div class="text-[11px] font-extrabold text-emerald-600 uppercase tracking-wider px-1 flex items-center justify-between">
+              <span>🌱 LEVEL 1: Pengenalan &amp; 1 Himpunan</span>
+            </div>
+            
+            <button onclick="selectConcept('pengenalan')" id="btn-c-pengenalan" class="w-full text-left p-3 rounded-2xl border-2 border-purple-200 bg-purple-50/60 font-bold text-xs text-purple-900 transition flex items-center justify-between shadow-2xs">
+              <span>1. Apa itu Himpunan &amp; Semesta (S)?</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-purple-500"></i>
+            </button>
+            
+            <button onclick="selectConcept('himpunan_tunggal')" id="btn-c-himpunan_tunggal" class="w-full text-left p-3 rounded-2xl border border-slate-100 hover:border-purple-200 font-bold text-xs text-slate-700 transition flex items-center justify-between">
+              <span>2. 1 Himpunan Dalam Semesta</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+            </button>
+
+            <button onclick="selectConcept('komplemen_a')" id="btn-c-komplemen_a" class="w-full text-left p-3 rounded-2xl border border-slate-100 hover:border-purple-200 font-bold text-xs text-slate-700 transition flex items-center justify-between">
+              <span>3. Komplemen Himpunan (A')</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+            </button>
+          </div>
+
+          <!-- LEVEL 2: 2 HIMPUNAN -->
+          <div class="space-y-1.5 pt-3 border-t border-purple-50">
+            <div class="text-[11px] font-extrabold text-pink-500 uppercase tracking-wider px-1 flex items-center justify-between">
+              <span>🌸 LEVEL 2: Operasi 2 Himpunan</span>
+            </div>
+
+            <button onclick="selectConcept('irisan')" id="btn-c-irisan" class="w-full text-left p-3 rounded-2xl border border-slate-100 hover:border-purple-200 font-bold text-xs text-slate-700 transition flex items-center justify-between">
+              <span>4. Irisan Dua Himpunan (A ∩ B)</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+            </button>
+
+            <button onclick="selectConcept('gabungan')" id="btn-c-gabungan" class="w-full text-left p-3 rounded-2xl border border-slate-100 hover:border-purple-200 font-bold text-xs text-slate-700 transition flex items-center justify-between">
+              <span>5. Gabungan Dua Himpunan (A ∪ B)</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+            </button>
+
+            <button onclick="selectConcept('selisih')" id="btn-c-selisih" class="w-full text-left p-3 rounded-2xl border border-slate-100 hover:border-purple-200 font-bold text-xs text-slate-700 transition flex items-center justify-between">
+              <span>6. Selisih Himpunan (A \ B)</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+            </button>
+
+            <button onclick="selectConcept('lepas')" id="btn-c-lepas" class="w-full text-left p-3 rounded-2xl border border-slate-100 hover:border-purple-200 font-bold text-xs text-slate-700 transition flex items-center justify-between">
+              <span>7. Himpunan Saling Lepas</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+            </button>
+          </div>
+
+          <!-- LEVEL 3: 3 HIMPUNAN -->
+          <div class="space-y-1.5 pt-3 border-t border-purple-50">
+            <div class="text-[11px] font-extrabold text-sky-500 uppercase tracking-wider px-1 flex items-center justify-between">
+              <span>⭐ LEVEL 3: Operasi 3 Himpunan</span>
+            </div>
+
+            <button onclick="selectConcept('irisan_3')" id="btn-c-irisan_3" class="w-full text-left p-3 rounded-2xl border border-slate-100 hover:border-sky-200 font-bold text-xs text-slate-700 transition flex items-center justify-between">
+              <span>8. Irisan 3 Himpunan (A ∩ B ∩ C)</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+            </button>
+
+            <button onclick="selectConcept('distributif_3')" id="btn-c-distributif_3" class="w-full text-left p-3 rounded-2xl border border-slate-100 hover:border-sky-200 font-bold text-xs text-slate-700 transition flex items-center justify-between">
+              <span>9. Distributif: A ∩ (B ∪ C)</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- CANVAS & PENJELASAN -->
+        <div class="lg:col-span-8 space-y-6">
+          
+          <div class="bg-white/80 rounded-3xl p-6 border-2 border-pink-100 shadow-sm flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <span class="text-[11px] font-extrabold text-pink-500 uppercase tracking-wider">Topik Pilihan 🎀</span>
+              <h2 id="concept-title" class="text-2xl font-black text-slate-900 tracking-tight mt-0.5">Apa itu Himpunan &amp; Semesta (S)?</h2>
+            </div>
+            <div id="concept-notation" class="bg-slate-900 text-pink-300 font-mono text-xs px-4 py-2 rounded-2xl font-black shadow-md border border-slate-800">
+              S = { Kumpulan Objek }
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            
+            <div class="md:col-span-7 bg-white rounded-3xl p-6 border-2 border-purple-100 shadow-sm flex flex-col items-center justify-center min-h-[350px]">
+              <div class="w-full flex items-center justify-between mb-2">
+                <span class="text-xs font-black text-purple-600 uppercase tracking-wider flex items-center gap-1.5">
+                  <i data-lucide="eye" class="w-4 h-4 text-pink-500"></i> Diagram Venn
+                </span>
+                <span id="anim-indicator" class="text-[10px] font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 hidden">
+                  ✨ Angka Diproyeksikan!
+                </span>
+              </div>
+
+              <svg id="main-svg" viewBox="0 0 380 250" class="w-full h-auto max-w-[360px] drop-shadow-xs"></svg>
+
+              <p class="mt-4 text-[11px] text-slate-500 font-medium text-center bg-purple-50/60 px-3 py-1.5 rounded-xl border border-purple-100">
+                💡 Warna Pastel menunjukkan wilayah/daerah hasil operasi himpunan.
+              </p>
+            </div>
+
+            <div class="md:col-span-5 space-y-4">
+              
+              <div class="bg-white rounded-3xl p-5 border-2 border-purple-100 shadow-sm space-y-2">
+                <div class="text-xs font-black text-purple-800 uppercase tracking-wider flex items-center gap-1.5 border-b border-purple-50 pb-2">
+                  <i data-lucide="book-open" class="w-4 h-4 text-pink-500"></i> Pengertian &amp; Definisi
+                </div>
+                <p id="concept-definition" class="text-xs text-slate-600 leading-relaxed font-medium">
+                  Penjelasan akademis...
+                </p>
+              </div>
+
+              <div class="bg-gradient-to-br from-pink-50/80 via-purple-50/50 to-sky-50/80 rounded-3xl p-5 border-2 border-pink-100 shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                  <div class="text-xs font-black text-pink-900 uppercase tracking-wider flex items-center gap-1.5">
+                    <i data-lucide="binary" class="w-4 h-4 text-pink-500"></i> Contoh Elemen Angka
+                  </div>
+                  <span class="text-[10px] font-extrabold text-pink-600 bg-white px-2 py-0.5 rounded-md border border-pink-100">Klik Angka! 👆</span>
+                </div>
+
+                <div id="concept-example" class="text-xs font-mono text-purple-950 bg-white/90 p-3.5 rounded-2xl border border-pink-100 leading-relaxed shadow-2xs">
+                  Contoh angka...
+                </div>
+
+                <button onclick="triggerNumberAnimation()" class="w-full bg-gradient-to-r from-pink-400 to-purple-500 hover:from-pink-500 hover:to-purple-600 text-white font-extrabold py-2.5 rounded-2xl shadow-md transition text-xs flex items-center justify-center gap-2 transform active:scale-95">
+                  <i data-lucide="play" class="w-4 h-4 fill-white"></i> Proyeksikan Angka Ke Diagram ✨
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- TAB 2: KUIS CAMPURAN & PEMBAHASAN -->
+    <div id="tab-kuis" class="hidden space-y-6">
+      <div class="bg-white rounded-3xl p-6 border-2 border-pink-100 shadow-sm max-w-4xl mx-auto space-y-6">
+        
+        <div class="flex flex-wrap items-center justify-between border-b border-purple-50 pb-4 gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-pink-100 text-pink-600 border border-pink-200 flex items-center justify-center font-black">
+              <i data-lucide="pen-tool" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h2 class="font-black text-lg text-slate-900">Kuis Campuran &amp; Analisis Jawaban 🎯</h2>
+              <p class="text-xs text-purple-600/80 font-bold">Gabungan Soal Konsep Teori &amp; Soal Angka Perhitungan</p>
+            </div>
+          </div>
+          <div class="bg-pink-50 text-pink-700 font-black text-xs px-4 py-2 rounded-2xl border border-pink-200 flex items-center gap-2">
+            <span>Skor Total:</span>
+            <span id="quiz-score" class="text-base font-black text-pink-600">0</span>
+            <span>/ 100</span>
+          </div>
+        </div>
+
+        <div id="quiz-container" class="space-y-6"></div>
+
+        <button onclick="checkQuiz()" class="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-black py-3.5 rounded-2xl shadow-lg transition text-xs flex items-center justify-center gap-2 transform active:scale-98">
+          <i data-lucide="check-circle-2" class="w-5 h-5"></i> Periksa Jawaban &amp; Buka Pembahasan
+        </button>
+
+      </div>
+    </div>
+
+    <!-- TAB 3: FLASHCARDS -->
+    <div id="tab-flashcard" class="hidden space-y-6">
+      <div class="max-w-xl mx-auto space-y-5">
+        
+        <div class="flex items-center justify-between bg-white px-5 py-3.5 rounded-2xl border-2 border-pink-100 shadow-sm text-xs font-black">
+          <span class="text-slate-500">Kartu Ke- <span id="card-index" class="text-pink-600 text-sm">1</span> Dari <span id="card-total">10</span></span>
+          <div class="flex items-center gap-2">
+            <button onclick="prevCard()" class="p-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 transition">
+              <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            </button>
+            <button onclick="nextCard()" class="p-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 transition">
+              <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="perspective-1000 w-full h-[290px] cursor-pointer" onclick="flipCard()">
+          <div id="flashcard-inner" class="relative w-full h-full duration-500 transform-style-3d shadow-md rounded-3xl">
+            
+            <div class="absolute w-full h-full backface-hidden bg-white border-2 border-pink-200 rounded-3xl p-6 flex flex-col justify-between items-center text-center">
+              <div class="w-full flex justify-between items-center text-[11px] font-black text-pink-600">
+                <span id="card-category" class="bg-pink-50 px-2.5 py-1 rounded-lg border border-pink-100">LEVEL 1: DASAR</span>
+                <span class="text-slate-400 font-bold">Klik untuk balik 🔄</span>
+              </div>
+              <div id="card-front-text" class="text-base font-black text-slate-800 px-3 leading-snug">
+                Pertanyaan flashcard...
+              </div>
+              <div class="text-[11px] text-purple-400 font-bold">🌸 VennPlayLab Cards</div>
+            </div>
+
+            <div class="absolute w-full h-full backface-hidden rotate-y-180 bg-slate-900 text-white rounded-3xl p-6 flex flex-col justify-between items-center text-center border-2 border-slate-800">
+              <div class="w-full flex justify-between items-center text-[11px] font-black text-emerald-400">
+                <span class="bg-emerald-950/80 px-2.5 py-1 rounded-lg border border-emerald-800">ANALISIS PENJELASAN</span>
+                <span class="text-slate-400 font-bold">Klik untuk balik 🔄</span>
+              </div>
+              <div id="card-back-text" class="text-xs font-semibold leading-relaxed text-slate-200 px-3">
+                Jawaban detail penjelasan...
+              </div>
+              <div class="text-[11px] text-emerald-400 font-black">✔ Jawaban Tepat</div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // DATA 3 LEVEL LENGKAP
+    const concepts = {
+      // --- LEVEL 1: PENGENALAN & 1 HIMPUNAN ---
+      pengenalan: {
+        title: "Apa itu Himpunan & Semesta (S)?",
+        notation: "S = { Elemen Semesta }",
+        level: "Level 1: Dasar",
+        definition: "Himpunan adalah kumpulan benda atau objek yang terdefinisi dengan jelas. Himpunan Semesta (S) adalah kumpulan seluruh objek yang sedang dibicarakan dan digambarkan sebagai kotak perseggi panjang luar.",
+        example: "<b>S</b> = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}<br>Seluruh angka di atas berada di dalam bingkai Semesta (S).",
+        dim: 0,
+        shades: ['semesta'],
+        numbers: { outside: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] }
+      },
+      himpunan_tunggal: {
+        title: "1 Himpunan Dalam Semesta (Himpunan A)",
+        notation: "A = { x | x ∈ A }",
+        level: "Level 1: Dasar",
+        definition: "Sebuah himpunan bagian A digambarkan sebagai satu lingkaran di dalam bingkai Semesta S. Anggota A berada di dalam lingkaran, sedangkan sisanya berada di luar lingkaran.",
+        example: "<b>S</b> = {1, 2, 3, 4, 5, 6, 7, 8}<br><b>A</b> = {2, 3, 5, 7} (Bilangan Prima)<br><b>Anggota A:</b> {2, 3, 5, 7}",
+        dim: 1,
+        shades: ['A'],
+        numbers: { A: ['2', '3', '5', '7'], outside: ['1', '4', '6', '8'] }
+      },
+      komplemen_a: {
+        title: "Komplemen Himpunan A (A')",
+        notation: "A' = { x | x ∈ S ∧ x ∉ A }",
+        level: "Level 1: Dasar",
+        definition: "Komplemen A adalah semua anggota Semesta (S) yang berada di LUAR lingkaran A.",
+        example: "<b>S</b> = {1, 2, 3, 4, 5, 6, 7, 8}<br><b>A</b> = {2, 3, 5, 7}<br><b>Komplemen A (A'):</b> {1, 4, 6, 8}",
+        dim: 1,
+        shades: ['outside'],
+        numbers: { A: ['2', '3', '5', '7'], outside: ['1', '4', '6', '8'] }
+      },
+
+      // --- LEVEL 2: OPERASI 2 HIMPUNAN ---
+      irisan: {
+        title: "Irisan Dua Himpunan (A ∩ B)",
+        notation: "A ∩ B = { x | x ∈ A ∧ x ∈ B }",
+        level: "Level 2: 2 Himpunan",
+        definition: "Irisan A dan B adalah anggota yang dimiliki bersama oleh kedua himpunan (wilayah tumpang tindih tengah).",
+        example: "<b>A</b> = {1, 2, 3, 4, 5}<br><b>B</b> = {3, 4, 5, 6, 7}<br><b>Irisan (A ∩ B):</b> {3, 4, 5}",
+        dim: 2,
+        shades: ['intersection'],
+        numbers: { onlyA: ['1', '2'], intersection: ['3', '4', '5'], onlyB: ['6', '7'], outside: ['8', '9'] }
+      },
+      gabungan: {
+        title: "Gabungan Dua Himpunan (A ∪ B)",
+        notation: "A ∪ B = { x | x ∈ A ∨ x ∈ B }",
+        level: "Level 2: 2 Himpunan",
+        definition: "Gabungan A dan B memuat seluruh anggota A, seluruh anggota B, maupun anggota kedua-duanya.",
+        example: "<b>A</b> = {1, 2, 3}<br><b>B</b> = {3, 4, 5}<br><b>Gabungan (A ∪ B):</b> {1, 2, 3, 4, 5}",
+        dim: 2,
+        shades: ['onlyA', 'intersection', 'onlyB'],
+        numbers: { onlyA: ['1', '2'], intersection: ['3'], onlyB: ['4', '5'], outside: ['6', '7'] }
+      },
+      selisih: {
+        title: "Selisih Dua Himpunan (A \\ B)",
+        notation: "A \\ B = { x | x ∈ A ∧ x ∉ B }",
+        level: "Level 2: 2 Himpunan",
+        definition: "Selisih A \\ B adalah anggota yang murni milik A dan bukan milik B (lingkaran A minus irisan).",
+        example: "<b>A</b> = {1, 2, 3, 4, 5}<br><b>B</b> = {4, 5, 6, 7}<br><b>Selisih (A \\ B):</b> {1, 2, 3}",
+        dim: 2,
+        shades: ['onlyA'],
+        numbers: { onlyA: ['1', '2', '3'], intersection: ['4', '5'], onlyB: ['6', '7'], outside: ['8'] }
+      },
+      lepas: {
+        title: "Himpunan Saling Lepas (Disjoint)",
+        notation: "A ∩ B = ∅",
+        level: "Level 2: 2 Himpunan",
+        definition: "Dua himpunan terpisah tanpa ada anggota yang sama (irisan berupa himpunan kosong).",
+        example: "<b>A</b> = {1, 3, 5} (Ganjil)<br><b>B</b> = {2, 4, 6} (Genap)<br><b>Irisan (A ∩ B):</b> { } (Kosong)",
+        dim: '2_disjoint',
+        shades: [],
+        numbers: { onlyA: ['1', '3', '5'], onlyB: ['2', '4', '6'], outside: ['7', '8'] }
+      },
+
+      // --- LEVEL 3: OPERASI 3 HIMPUNAN ---
+      irisan_3: {
+        title: "Irisan Tiga Himpunan (A ∩ B ∩ C)",
+        notation: "A ∩ B ∩ C",
+        level: "Level 3: 3 Himpunan",
+        definition: "Anggota yang dimiliki bersama secara sekaligus oleh ketiga himpunan A, B, dan C (wilayah paling tengah).",
+        example: "<b>A</b> = {1,2,3,4,5}, <b>B</b> = {3,4,6,7}, <b>C</b> = {4,5,7,8}<br><b>Irisan (A ∩ B ∩ C):</b> {4}",
+        dim: 3,
+        shades: ['ABC'],
+        numbers: { ABC: ['4'], AB: ['3'], AC: ['5'], BC: ['7'], A: ['1','2'], B: ['6'], C: ['8'], outside: ['9'] }
+      },
+      distributif_3: {
+        title: "Sifat Distributif: A ∩ (B ∪ C)",
+        notation: "A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C)",
+        level: "Level 3: 3 Himpunan",
+        definition: "Irisan A dengan gabungan (B ∪ C) sama dengan gabungan wilayah (A ∩ B) dan (A ∩ C).",
+        example: "<b>A</b> = {1,2,3,4,5}, <b>B</b> = {2,4}, <b>C</b> = {3,5}<br><b>Hasil A ∩ (B ∪ C):</b> {2, 3, 4, 5}",
+        dim: 3,
+        shades: ['AB', 'AC', 'ABC'],
+        numbers: { ABC: ['4'], AB: ['2'], AC: ['3', '5'], A: ['1'], B: ['6'], C: ['7'], outside: ['8'] }
+      }
+    };
+
+    // 10 FLASHCARDS
+    const flashcards = [
+      { cat: "LEVEL 1: DASAR", front: "Apa fungsi bingkai persegi panjang dalam Diagram Venn?", back: "Merepresentasikan Himpunan Semesta (S) yang memuat seluruh objek pembicaraan." },
+      { cat: "LEVEL 1: DASAR", front: "Bagaimana simbol dan pengertian dari Komplemen Himpunan A?", back: "Dilambangkan A' atau Aᶜ, yaitu seluruh anggota Semesta (S) yang BUKAN merupakan anggota A." },
+      { cat: "LEVEL 2: OPERASI", front: "Apa yang dimaksud dengan Irisan Dua Himpunan (A ∩ B)?", back: "Himpunan yang anggotanya dimiliki bersama oleh himpunan A sekaligus himpunan B." },
+      { cat: "LEVEL 2: OPERASI", front: "Apa perbedaan utama antara A ∪ B dan A ∩ B?", back: "A ∪ B menggabungkan seluruh anggota A dan B, sedangkan A ∩ B hanya mengambil anggota tumpang tindihnya saja." },
+      { cat: "LEVEL 2: OPERASI", front: "Jika A = {1, 2, 3} dan B = {3, 4, 5}, berapakah selisih A \\ B?", back: "A \\ B = {1, 2} (Yaitu seluruh anggota A yang tidak ada pada B)." },
+      { cat: "LEVEL 2: OPERASI", front: "Kapan dua himpunan dikatakan saling lepas (disjoint)?", back: "Ketika kedua himpunan tidak memiliki anggota persekutuan sama sekali (A ∩ B = ∅)." },
+      { cat: "LEVEL 3: ADVANCED", front: "Tuliskan bunyi rumus Hukum De Morgan I!", back: "(A ∪ B)' = A' ∩ B' (Komplemen gabungan sama dengan irisan dari masing-masing komplemennya)." },
+      { cat: "LEVEL 3: ADVANCED", front: "Tuliskan bentuk Sifat Distributif Irisan terhadap Gabungan!", back: "A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C)." },
+      { cat: "LEVEL 1: ANGKA", front: "Jika S = {1..10} dan A = {2, 4, 6, 8, 10}, berapakah A'?", back: "A' = {1, 3, 5, 7, 9} (Himpunan bilangan ganjil di bawah 10)." },
+      { cat: "LEVEL 1: DASAR", front: "Apa arti dari simbol ∈ dan ∉?", back: "∈ artinya 'merupakan anggota dari', sedangkan ∉ artinya 'bukan anggota dari'." }
+    ];
+
+    // SOAL KUIS CAMPURAN (KONSEP & ANGKA)
+    const quizData = [
+      {
+        type: "konsep",
+        q: "1. Misalkan S adalah himpunan semesta dan A adalah himpunan bagian dari S. Manakah pernyataan yang paling tepat mengenai Komplemen A (A')?",
+        opts: [
+          "Semua anggota A yang juga menjadi anggota S",
+          "Semua anggota S yang TIDAK menjadi anggota A",
+          "Anggota yang dimiliki bersama oleh dua himpunan",
+          "Himpunan kosong tanpa anggota"
+        ],
+        ans: 1,
+        explain: "<b>Analisis Jawaban:</b><br>Berdasarkan definisi, Komplemen A (dilambangkan A') adalah himpunan semua anggota Semesta (S) yang terletak di <i>luar</i> lingkaran A."
+      },
+      {
+        type: "angka",
+        q: "2. Diketahui S = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, A = {2, 3, 5, 7}, dan B = {1, 3, 5, 7, 9}. Tentukan anggota dari (A ∩ B)'!",
+        opts: [
+          "{3, 5, 7}",
+          "{1, 2, 4, 6, 8, 9, 10}",
+          "{2, 4, 6, 8, 10}",
+          "{1, 2, 3, 5, 7, 9}"
+        ],
+        ans: 1,
+        explain: "<b>Analisis Langkah demi Langkah:</b><br>1. Cari Irisan (A ∩ B) dulu: {3, 5, 7}<br>2. Cari Komplemennya (A ∩ B)' terhadap Semesta S: Ambil seluruh anggota S kecuali {3, 5, 7}, yaitu <b>{1, 2, 4, 6, 8, 9, 10}</b>."
+      },
+      {
+        type: "konsep",
+        q: "3. Berdasarkan Hukum De Morgan pada teori himpunan, bentuk ekspresi yang ekuivalen (senilai) dengan (A ∪ B)' adalah...",
+        opts: [
+          "A' ∪ B'",
+          "A' ∩ B'",
+          "A ∩ B",
+          "(A ∩ B)'"
+        ],
+        ans: 1,
+        explain: "<b>Analisis Hukum De Morgan:</b><br>Bunyi Hukum De Morgan I menyatakan bahwa komplemen dari gabungan dua himpunan sama dengan irisan dari komplemen masing-masing himpunan: <b>(A ∪ B)' = A' ∩ B'</b>."
+      },
+      {
+        type: "angka",
+        q: "4. Diketahui A = {1, 2, 3, 4, 5} dan B = {4, 5, 6, 7}. Berapakah hasil dari Selisih Himpunan (A \\ B)?",
+        opts: [
+          "{1, 2, 3}",
+          "{6, 7}",
+          "{4, 5}",
+          "{1, 2, 3, 6, 7}"
+        ],
+        ans: 0,
+        explain: "<b>Analisis Selisih Himpunan:</b><br>Selisih A \\ B artinya mengambil anggota A yang <i>tidak ada</i> di dalam B. Angka {4, 5} ada di B, sehingga sisa anggota A yang murni adalah <b>{1, 2, 3}</b>."
+      },
+      {
+        type: "angka",
+        q: "5. Diketahui 3 himpunan: A = {1, 2, 3, 4, 5}, B = {3, 4, 6, 7}, dan C = {4, 5, 7, 8}. Tentukan anggota dari (A ∩ B ∩ C)!",
+        opts: [
+          "{3, 4, 5, 7}",
+          "{4}",
+          "{3, 4}",
+          "{1, 2, 8}"
+        ],
+        ans: 1,
+        explain: "<b>Analisis 3 Himpunan:</b><br>Irisan (A ∩ B ∩ C) adalah angka yang muncul di ketiga himpunan sekaligus. Angka yang ada di A, B, dan C bersamaan hanya angka <b>4</b>."
+      }
+    ];
+
+    let currentConceptKey = 'pengenalan';
+    let currentCardIdx = 0;
+    let isFlipped = false;
+    let showNumbersInDiagram = false;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+      renderConcept();
+      renderQuiz();
+      renderFlashcard();
+    });
+
+    function switchTab(tab) {
+      ['explorasi', 'kuis', 'flashcard'].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.add('hidden');
+        document.getElementById(`btn-tab-${t}`).className = "px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 text-slate-600 hover:text-purple-600";
+      });
+      document.getElementById(`tab-${tab}`).classList.remove('hidden');
+      document.getElementById(`btn-tab-${tab}`).className = "px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md shadow-pink-200";
+    }
+
+    function selectConcept(key) {
+      currentConceptKey = key;
+      showNumbersInDiagram = false;
+      document.getElementById('anim-indicator').classList.add('hidden');
+
+      Object.keys(concepts).forEach(k => {
+        const btn = document.getElementById(`btn-c-${k}`);
+        if (btn) {
+          if (k === key) {
+            btn.className = "w-full text-left p-3 rounded-2xl border-2 border-purple-200 bg-purple-50/60 font-bold text-xs text-purple-900 transition flex items-center justify-between shadow-2xs";
+          } else {
+            btn.className = "w-full text-left p-3 rounded-2xl border border-slate-100 hover:border-purple-200 font-bold text-xs text-slate-700 transition flex items-center justify-between";
+          }
+        }
+      });
+      renderConcept();
+    }
+
+    function triggerNumberAnimation() {
+      showNumbersInDiagram = true;
+      document.getElementById('anim-indicator').classList.remove('hidden');
+      renderConcept();
+    }
+
+    function renderConcept() {
+      const c = concepts[currentConceptKey];
+      document.getElementById('concept-title').innerText = c.title;
+      document.getElementById('concept-notation').innerText = c.notation;
+      document.getElementById('level-badge').innerText = c.level;
+      document.getElementById('concept-definition').innerText = c.definition;
+      document.getElementById('concept-example').innerHTML = c.example;
+
+      renderSVG('main-svg', c);
+    }
+
+    function renderSVG(id, c) {
+      const svg = document.getElementById(id);
+      const pastelHighlight = "#F472B6"; // Pastel Pink
+      const pastelBg = "#F8FAFC";
+      const shades = c.shades || [];
+      const nums = c.numbers || {};
+
+      // LEVEL 1: 0 ATAU 1 HIMPUNAN
+      if (c.dim === 0) {
+        svg.innerHTML = `
+          <rect x="5" y="5" width="370" height="240" rx="20" fill="${shades.includes('semesta') ? '#FBCFE8' : pastelBg}" stroke="#CBD5E1" stroke-width="2.5"/>
+          <text x="24" y="32" font-weight="900" fill="#64748B" font-size="16">S</text>
+          ${showNumbersInDiagram ? `
+            <g class="animated-num" font-weight="800" font-size="14" fill="#831843">
+              ${(nums.outside || []).map((n, i) => `<text x="${40 + (i*32)}" y="${130}">${n}</text>`).join('')}
+            </g>
+          ` : ''}
+        `;
+      } else if (c.dim === 1) {
+        const fillA = shades.includes('A') ? pastelHighlight : '#FFFFFF';
+        const fillOutside = shades.includes('outside') ? pastelHighlight : pastelBg;
+
+        svg.innerHTML = `
+          <rect x="5" y="5" width="370" height="240" rx="20" fill="${fillOutside}" stroke="#CBD5E1" stroke-width="2.5"/>
+          <text x="24" y="32" font-weight="900" fill="#64748B" font-size="16">S</text>
+
+          <circle cx="190" cy="125" r="75" fill="${fillA}" fill-opacity="0.7" stroke="#EC4899" stroke-width="3"/>
+          <text x="185" y="80" font-weight="900" fill="#831843" font-size="18">A</text>
+
+          ${showNumbersInDiagram ? `
+            <g class="animated-num" font-weight="800" font-size="13">
+              ${(nums.A || []).map((n, i) => `<text x="${160 + (i*18)}" y="${130}">${n}</text>`).join('')}
+              ${(nums.outside || []).map((n, i) => `<text x="${40 + (i*35)}" y="${220}" fill="#475569">${n}</text>`).join('')}
+            </g>
+          ` : ''}
+        `;
+      } 
+      // LEVEL 2: 2 HIMPUNAN
+      else if (c.dim === 2) {
+        const bgFill = shades.includes('outside') ? pastelHighlight : pastelBg;
+        const onlyAFill = shades.includes('onlyA') ? pastelHighlight : (shades.includes('outside') ? pastelHighlight : '#FFFFFF');
+        const onlyBFill = shades.includes('onlyB') ? pastelHighlight : (shades.includes('outside') ? pastelHighlight : '#FFFFFF');
+
+        svg.innerHTML = `
+          <rect x="5" y="5" width="370" height="240" rx="20" fill="${bgFill}" stroke="#CBD5E1" stroke-width="2.5"/>
+          <text x="24" y="32" font-weight="900" fill="#64748B" font-size="16">S</text>
+          
+          <circle cx="145" cy="125" r="70" fill="${onlyAFill}" fill-opacity="0.65" stroke="#EC4899" stroke-width="3"/>
+          <circle cx="235" cy="125" r="70" fill="${onlyBFill}" fill-opacity="0.65" stroke="#3B82F6" stroke-width="3"/>
+
+          ${shades.includes('intersection') ? `
+            <path d="M 190,63.1 A 70,70 0 0,1 190,186.9 A 70,70 0 0,1 190,63.1 Z" fill="${pastelHighlight}" fill-opacity="0.85"/>
+          ` : ''}
+
+          <text x="110" y="130" font-weight="900" fill="#831843" font-size="18">A</text>
+          <text x="260" y="130" font-weight="900" fill="#1E3A8A" font-size="18">B</text>
+
+          ${showNumbersInDiagram ? `
+            <g class="animated-num" font-weight="800" font-size="13">
+              ${(nums.onlyA || []).map((n, i) => `<text x="${105 + (i*14)}" y="${150 + (i*12)}" fill="#831843">${n}</text>`).join('')}
+              ${(nums.intersection || []).map((n, i) => `<text x="${184 + (i*10)}" y="${120 + (i*16)}" fill="#FFFFFF">${n}</text>`).join('')}
+              ${(nums.onlyB || []).map((n, i) => `<text x="${255 + (i*14)}" y="${150 + (i*12)}" fill="#1E3A8A">${n}</text>`).join('')}
+              ${(nums.outside || []).map((n, i) => `<text x="${40 + (i*30)}" y="${220}" fill="#475569">${n}</text>`).join('')}
+            </g>
+          ` : ''}
+        `;
+      } else if (c.dim === '2_disjoint') {
+        svg.innerHTML = `
+          <rect x="5" y="5" width="370" height="240" rx="20" fill="${pastelBg}" stroke="#CBD5E1" stroke-width="2.5"/>
+          <text x="24" y="32" font-weight="900" fill="#64748B" font-size="16">S</text>
+
+          <circle cx="115" cy="125" r="60" fill="#FFFFFF" stroke="#EC4899" stroke-width="3"/>
+          <circle cx="265" cy="125" r="60" fill="#FFFFFF" stroke="#3B82F6" stroke-width="3"/>
+
+          <text x="110" y="100" font-weight="900" fill="#831843" font-size="16">A</text>
+          <text x="260" y="100" font-weight="900" fill="#1E3A8A" font-size="16">B</text>
+
+          ${showNumbersInDiagram ? `
+            <g class="animated-num" font-weight="800" font-size="13">
+              ${(nums.onlyA || []).map((n, i) => `<text x="${100 + (i*14)}" y="${135}" fill="#831843">${n}</text>`).join('')}
+              ${(nums.onlyB || []).map((n, i) => `<text x="${250 + (i*14)}" y="${135}" fill="#1E3A8A">${n}</text>`).join('')}
+              ${(nums.outside || []).map((n, i) => `<text x="${40 + (i*30)}" y="${220}" fill="#475569">${n}</text>`).join('')}
+            </g>
+          ` : ''}
+        `;
+      } 
+      // LEVEL 3: 3 HIMPUNAN
+      else if (c.dim === 3) {
+        const isABC = shades.includes('ABC');
+        const isAB = shades.includes('AB');
+        const isAC = shades.includes('AC');
+
+        svg.innerHTML = `
+          <rect x="5" y="5" width="370" height="240" rx="20" fill="${pastelBg}" stroke="#CBD5E1" stroke-width="2.5"/>
+          <text x="24" y="32" font-weight="900" fill="#64748B" font-size="14">S</text>
+
+          <circle cx="155" cy="105" r="55" fill="${(isAB||isAC)?pastelHighlight:'#A5B4FC'}" fill-opacity="0.5" stroke="#4338CA" stroke-width="2.5"/>
+          <circle cx="225" cy="105" r="55" fill="${isAB?pastelHighlight:'#93C5FD'}" fill-opacity="0.5" stroke="#1D4ED8" stroke-width="2.5"/>
+          <circle cx="190" cy="155" r="55" fill="${(isABC||isAC)?pastelHighlight:'#6EE7B7'}" fill-opacity="${isABC?'0.85':'0.5'}" stroke="#047857" stroke-width="2.5"/>
+
+          <text x="130" y="95" font-weight="900" fill="#4338CA" font-size="15">A</text>
+          <text x="240" y="95" font-weight="900" fill="#1D4ED8" font-size="15">B</text>
+          <text x="186" y="195" font-weight="900" fill="#047857" font-size="15">C</text>
+
+          ${showNumbersInDiagram ? `
+            <g class="animated-num" font-weight="800" font-size="12">
+              <text x="186" y="128" fill="#1E1B4B">${(nums.ABC||[])[0]||''}</text>
+              <text x="186" y="95" fill="#4338CA">${(nums.AB||[])[0]||''}</text>
+              <text x="160" y="145" fill="#047857">${(nums.AC||[])[0]||''}</text>
+              <text x="210" y="145" fill="#1D4ED8">${(nums.BC||[])[0]||''}</text>
+              <text x="125" y="115" fill="#4338CA">${(nums.A||[])[0]||''}</text>
+              <text x="250" y="115" fill="#1D4ED8">${(nums.B||[])[0]||''}</text>
+              <text x="186" y="175" fill="#047857">${(nums.C||[])[0]||''}</text>
+            </g>
+          ` : ''}
+        `;
+      }
+    }
+
+    function renderQuiz() {
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = quizData.map((item, qIdx) => `
+        <div class="space-y-4 bg-purple-50/40 p-5 rounded-3xl border-2 border-purple-100">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-black px-2.5 py-1 rounded-full ${item.type === 'konsep' ? 'bg-pink-100 text-pink-700' : 'bg-sky-100 text-sky-700'}">
+              ${item.type === 'konsep' ? '🌸 KONSEP TEORI' : '🔢 SOAL ANGKA'}
+            </span>
+          </div>
+
+          <div class="font-bold text-xs text-slate-800 leading-relaxed">${item.q}</div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            ${item.opts.map((opt, oIdx) => `
+              <label class="flex items-center gap-2.5 p-3 rounded-2xl bg-white border border-purple-100 cursor-pointer hover:bg-pink-50/50 transition text-xs font-semibold text-slate-700 shadow-2xs">
+                <input type="radio" name="q-${qIdx}" value="${oIdx}" class="text-pink-600 focus:ring-pink-500">
+                <span>${opt}</span>
+              </label>
+            `).join('')}
+          </div>
+
+          <div id="explain-${qIdx}" class="hidden mt-3 p-4 bg-white rounded-2xl border-2 border-emerald-200 text-xs text-slate-700 leading-relaxed space-y-1">
+            <div class="font-black text-emerald-700 flex items-center gap-1.5">
+              <i data-lucide="check-circle" class="w-4 h-4"></i> Analisis &amp; Pembahasan Jawaban:
+            </div>
+            <div>${item.explain}</div>
+          </div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    function checkQuiz() {
+      let correct = 0;
+      quizData.forEach((item, qIdx) => {
+        const selected = document.querySelector(`input[name="q-${qIdx}"]:checked`);
+        const explainBox = document.getElementById(`explain-${qIdx}`);
+        explainBox.classList.remove('hidden');
+
+        if (selected && parseInt(selected.value) === item.ans) {
+          correct++;
+          explainBox.className = "mt-3 p-4 bg-emerald-50/80 rounded-2xl border-2 border-emerald-200 text-xs text-emerald-950 leading-relaxed space-y-1";
+        } else {
+          explainBox.className = "mt-3 p-4 bg-rose-50/80 rounded-2xl border-2 border-rose-200 text-xs text-rose-950 leading-relaxed space-y-1";
+        }
+      });
+
+      const score = Math.round((correct / quizData.length) * 100);
+      document.getElementById('quiz-score').innerText = score;
+    }
+
+    function renderFlashcard() {
+      const card = flashcards[currentCardIdx];
+      document.getElementById('card-index').innerText = currentCardIdx + 1;
+      document.getElementById('card-total').innerText = flashcards.length;
+      document.getElementById('card-category').innerText = card.cat;
+      document.getElementById('card-front-text').innerText = card.front;
+      document.getElementById('card-back-text').innerText = card.back;
+
+      isFlipped = false;
+      document.getElementById('flashcard-inner').classList.remove('rotate-y-180');
+    }
+
+    function flipCard() {
+      isFlipped = !isFlipped;
+      document.getElementById('flashcard-inner').classList.toggle('rotate-y-180', isFlipped);
+    }
+
+    function nextCard() {
+      currentCardIdx = (currentCardIdx + 1) % flashcards.length;
+      renderFlashcard();
+    }
+
+    function prevCard() {
+      currentCardIdx = (currentCardIdx - 1 + flashcards.length) % flashcards.length;
+      renderFlashcard();
+    }
+  </script>
+</body>
+</html>
